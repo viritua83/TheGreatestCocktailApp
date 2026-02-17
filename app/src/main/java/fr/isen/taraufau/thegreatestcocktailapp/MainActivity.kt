@@ -18,6 +18,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import fr.isen.taraufau.thegreatestcocktailapp.ui.theme.TheGreatestCocktailAppTheme
+import java.net.URLEncoder
+import java.net.URLDecoder
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,21 +70,25 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("categories") {
                             CategoriesScreen(onCategoryClick = { category ->
-                                navController.navigate("drinks/$category")
+                                val encoded = URLEncoder.encode(category, "UTF-8")
+                                navController.navigate("drinks/$encoded")
                             })
                         }
                         composable("drinks/{category}") { backStackEntry ->
-                            val category = backStackEntry.arguments?.getString("category") ?: ""
+                            val category = URLDecoder.decode(
+                                backStackEntry.arguments?.getString("category") ?: "", "UTF-8"
+                            )
                             DrinksListScreen(
                                 category = category,
-                                onDrinkClick = { drink ->
-                                    navController.navigate("detail/$drink")
+                                onDrinkClick = { drinkId ->
+                                    navController.navigate("detail/$drinkId")
                                 },
                                 onBack = { navController.popBackStack() }
                             )
                         }
-                        composable("detail/{drink}") {
-                            DetailCocktailScreen()
+                        composable("detail/{drinkId}") { backStackEntry ->
+                            val drinkId = backStackEntry.arguments?.getString("drinkId") ?: ""
+                            DetailCocktailScreen(drinkId = drinkId)
                         }
                         composable("favorites") {
                             Text("Favoris - à venir", modifier = Modifier.padding(16.dp))
