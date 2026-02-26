@@ -91,7 +91,9 @@ class MainActivity : ComponentActivity() {
                             DetailCocktailScreen(drinkId = drinkId)
                         }
                         composable("favorites") {
-                            Text("Favoris - à venir", modifier = Modifier.padding(16.dp))
+                            FavoritesScreen(onDrinkClick = { drinkId ->
+                                navController.navigate("detail/$drinkId")
+                            })
                         }
                     }
                 }

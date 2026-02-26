@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -30,8 +31,8 @@ fun DetailCocktailScreen(drinkId: String? = null) {
     var isFavorite by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
-    // Appel API au chargement de l'écran
     LaunchedEffect(drinkId) {
         val call = if (drinkId != null) {
             NetworkManager.api.getCocktailDetail(drinkId)
@@ -41,12 +42,15 @@ fun DetailCocktailScreen(drinkId: String? = null) {
 
         call.enqueue(object : Callback<CocktailResponse> {
             override fun onResponse(call: Call<CocktailResponse>, response: Response<CocktailResponse>) {
-                cocktail = response.body()?.drinks?.firstOrNull()
+                val drink = response.body()?.drinks?.firstOrNull()
+                cocktail = drink
+                // Vérifier si ce cocktail est déjà en favori
+                if (drink != null) {
+                    isFavorite = FavoritesManager.isFavorite(context, drink.idDrink)
+                }
             }
 
-            override fun onFailure(call: Call<CocktailResponse>, t: Throwable) {
-                // Erreur réseau
-            }
+            override fun onFailure(call: Call<CocktailResponse>, t: Throwable) {}
         })
     }
 
@@ -57,12 +61,20 @@ fun DetailCocktailScreen(drinkId: String? = null) {
                 title = { Text(cocktail?.strDrink ?: "Chargement...") },
                 actions = {
                     IconButton(onClick = {
-                        isFavorite = !isFavorite
-                        scope.launch {
-                            snackbarHostState.showSnackbar(
-                                if (isFavorite) "Ajouté aux favoris !"
-                                else "Retiré des favoris"
+                        cocktail?.let { drink ->
+                            val drinkSummary = DrinkSummary(
+                                strDrink = drink.strDrink,
+                                strDrinkThumb = drink.strDrinkThumb,
+                                idDrink = drink.idDrink
                             )
+                            val added = FavoritesManager.toggleFavorite(context, drinkSummary)
+                            isFavorite = added
+                            scope.launch {
+                                snackbarHostState.showSnackbar(
+                                    if (added) "Ajouté aux favoris !"
+                                    else "Retiré des favoris"
+                                )
+                            }
                         }
                     }) {
                         Icon(
@@ -76,7 +88,6 @@ fun DetailCocktailScreen(drinkId: String? = null) {
         }
     ) { innerPadding ->
         if (cocktail == null) {
-            // Écran de chargement
             Box(
                 modifier = Modifier
                     .padding(innerPadding)
@@ -96,7 +107,6 @@ fun DetailCocktailScreen(drinkId: String? = null) {
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Image depuis l'URL
                 AsyncImage(
                     model = drink.strDrinkThumb,
                     contentDescription = "Photo du cocktail",
@@ -129,7 +139,6 @@ fun DetailCocktailScreen(drinkId: String? = null) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Carte ingrédients
                 val ingredients = drink.getIngredients()
                 if (ingredients.isNotEmpty()) {
                     Card(
@@ -152,7 +161,6 @@ fun DetailCocktailScreen(drinkId: String? = null) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Carte recette
                 drink.strInstructions?.let { instructions ->
                     Card(
                         modifier = Modifier.fillMaxWidth(),
