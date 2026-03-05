@@ -2,7 +2,6 @@ package fr.isen.taraufau.thegreatestcocktailapp
 
 import com.google.gson.annotations.SerializedName
 
-// Réponse pour un cocktail détaillé ou random
 data class CocktailResponse(
     @SerializedName("drinks") val drinks: List<CocktailDetail>?
 )
@@ -26,7 +25,6 @@ data class CocktailDetail(
     @SerializedName("strMeasure4") val strMeasure4: String?,
     @SerializedName("strMeasure5") val strMeasure5: String?
 ) {
-    // Fonction utilitaire pour récupérer les ingrédients sous forme de liste
     fun getIngredients(): List<Pair<String, String>> {
         val ingredients = listOf(
             strIngredient1 to strMeasure1,
@@ -41,7 +39,6 @@ data class CocktailDetail(
     }
 }
 
-// Réponse pour la liste des catégories
 data class CategoryResponse(
     @SerializedName("drinks") val drinks: List<Category>?
 )
@@ -50,7 +47,6 @@ data class Category(
     @SerializedName("strCategory") val strCategory: String
 )
 
-// Réponse pour la liste des drinks d'une catégorie
 data class DrinksByCategoryResponse(
     @SerializedName("drinks") val drinks: List<DrinkSummary>?
 )
@@ -59,4 +55,12 @@ data class DrinkSummary(
     @SerializedName("strDrink") val strDrink: String,
     @SerializedName("strDrinkThumb") val strDrinkThumb: String?,
     @SerializedName("idDrink") val idDrink: String
+)
+
+data class IngredientListResponse(
+    @SerializedName("drinks") val drinks: List<IngredientItem>?
+)
+
+data class IngredientItem(
+    @SerializedName("strIngredient1") val strIngredient1: String
 )

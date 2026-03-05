@@ -1,5 +1,6 @@
 package fr.isen.taraufau.thegreatestcocktailapp
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -23,10 +24,11 @@ import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import androidx.compose.ui.text.style.TextAlign
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailCocktailScreen(drinkId: String? = null) {
+fun DetailCocktailScreen(drinkId: String? = null, onCategoryClick: (String) -> Unit = {}) {
     var cocktail by remember { mutableStateOf<CocktailDetail?>(null) }
     var isFavorite by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
@@ -58,7 +60,11 @@ fun DetailCocktailScreen(drinkId: String? = null) {
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text(cocktail?.strDrink ?: "Chargement...") },
+                title = { Text(cocktail?.strDrink ?: "Chargement...", style = MaterialTheme.typography.titleLarge) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.primary
+                ),
                 actions = {
                     IconButton(onClick = {
                         cocktail?.let { drink ->
@@ -118,13 +124,18 @@ fun DetailCocktailScreen(drinkId: String? = null) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text(text = drink.strDrink, fontSize = 24.sp)
+                Text(text = drink.strDrink,
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     drink.strCategory?.let {
-                        AssistChip(onClick = {}, label = { Text(it) })
+                        AssistChip(onClick = {onCategoryClick(it)}, label = { Text(it) })
                     }
                     drink.strAlcoholic?.let {
                         AssistChip(onClick = {}, label = { Text(it) })
@@ -143,6 +154,14 @@ fun DetailCocktailScreen(drinkId: String? = null) {
                 if (ingredients.isNotEmpty()) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            contentColor = MaterialTheme.colorScheme.onSurface
+                        ),
+                        elevation = CardDefaults.cardElevation(
+                            defaultElevation = 4.dp
+                        ),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f)),
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
@@ -164,6 +183,14 @@ fun DetailCocktailScreen(drinkId: String? = null) {
                 drink.strInstructions?.let { instructions ->
                     Card(
                         modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            contentColor = MaterialTheme.colorScheme.onSurface
+                        ),
+                        elevation = CardDefaults.cardElevation(
+                            defaultElevation = 4.dp
+                        ),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f)),
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {

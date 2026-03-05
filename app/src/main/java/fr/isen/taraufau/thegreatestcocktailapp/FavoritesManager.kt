@@ -9,7 +9,6 @@ object FavoritesManager {
     private const val KEY_FAVORITES = "favorites_list"
     private val gson = Gson()
 
-    // Récupérer la liste des favoris
     fun getFavorites(context: Context): List<DrinkSummary> {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val json = prefs.getString(KEY_FAVORITES, null) ?: return emptyList()
@@ -17,12 +16,10 @@ object FavoritesManager {
         return gson.fromJson(json, type)
     }
 
-    // Vérifier si un cocktail est en favori
     fun isFavorite(context: Context, idDrink: String): Boolean {
         return getFavorites(context).any { it.idDrink == idDrink }
     }
 
-    // Ajouter ou retirer un favori
     fun toggleFavorite(context: Context, drink: DrinkSummary): Boolean {
         val favorites = getFavorites(context).toMutableList()
         val exists = favorites.any { it.idDrink == drink.idDrink }

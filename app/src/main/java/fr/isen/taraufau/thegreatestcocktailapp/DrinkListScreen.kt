@@ -46,7 +46,11 @@ fun DrinksListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(category) },
+                title = { Text(category, style = MaterialTheme.typography.titleLarge) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.primary
+                ),
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
@@ -55,6 +59,7 @@ fun DrinksListScreen(
                         )
                     }
                 }
+
             )
         }
     ) { innerPadding ->

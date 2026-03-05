@@ -1,5 +1,6 @@
 package fr.isen.taraufau.thegreatestcocktailapp
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,7 +30,11 @@ fun FavoritesScreen(onDrinkClick: (String) -> Unit) {
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Favoris") })
+            TopAppBar(title = { Text("Favoris", style = MaterialTheme.typography.titleLarge) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.primary
+                ))
         }
     ) { innerPadding ->
         if (favorites.isEmpty()) {
@@ -56,7 +61,15 @@ fun FavoritesScreen(onDrinkClick: (String) -> Unit) {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { onDrinkClick(drink.idDrink) }
+                            .clickable { onDrinkClick(drink.idDrink) },
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            contentColor = MaterialTheme.colorScheme.onSurface
+                        ),
+                        elevation = CardDefaults.cardElevation(
+                            defaultElevation = 4.dp
+                        ),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f)),
                     ) {
                         Row(
                             modifier = Modifier.padding(12.dp),

@@ -1,5 +1,6 @@
 package fr.isen.taraufau.thegreatestcocktailapp
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -35,7 +36,12 @@ fun CategoriesScreen(onCategoryClick: (String) -> Unit) {
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Catégories") })
+            TopAppBar(title = { Text("Catégories", style = MaterialTheme.typography.titleLarge) },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        titleContentColor = MaterialTheme.colorScheme.primary
+                    )
+            )
         }
     ) { innerPadding ->
         if (isLoading) {
@@ -59,7 +65,15 @@ fun CategoriesScreen(onCategoryClick: (String) -> Unit) {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { onCategoryClick(category.strCategory) }
+                            .clickable { onCategoryClick(category.strCategory) },
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            contentColor = MaterialTheme.colorScheme.onSurface
+                        ),
+                        elevation = CardDefaults.cardElevation(
+                            defaultElevation = 4.dp
+                        ),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f)),
                     ) {
                         Text(
                             text = category.strCategory,
